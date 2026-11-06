@@ -1,0 +1,18 @@
+# Secrets : ne jamais committer
+.env
+.env.*
+*.env
+*.pem
+*.key
+
+# Dépendances et sorties
+node_modules/
+.venv/
+__pycache__/
+dist/
+build/
+
+# Système et IDE
+.DS_Store
+.vscode/
+.idea/
