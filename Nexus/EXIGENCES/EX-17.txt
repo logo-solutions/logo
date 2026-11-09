@@ -1,0 +1,20 @@
+# EX-17 : runners dédiés par zone de sensibilité
+
+- **Source interne** : compte rendu d'atelier « CR » (règles SSI internes), recensée dans le référentiel interne d'exigences CI/CD.
+- **Niveau du CSV** : « Interne + Obligatoire (ReCyF) ».
+- **Verbatim du CSV** : « Les runners sont dédiés par projet ou par environnement ; aucun runner partagé entre zones de sensibilité différentes. »
+- **Vérification prévue (CSV)** : « Inventaire des runners et de leurs tags ».
+
+## Source ReCyF citée
+
+**ReCyF 7.A.4-EE**, vérifié : « Les sous-systèmes identifiés à la mesure 7.A.3-EE sont cloisonnés entre eux physiquement et/ou logiquement. »
+
+Cette mesure porte sur le cloisonnement **des sous-systèmes**, pas sur les runners. Son application aux runners est une **extrapolation**.
+
+## Interprétation retenue (à valider)
+
+Le runner qui publie en candidat et celui qui déploie depuis la release sont distincts, avec des tags distincts. La séparation des dépôts ne suffit pas à elle seule.
+
+## Où elle est utilisée
+
+- ADR-001 : hors périmètre direct. À reprendre dans l'ADR des rôles RBAC, où les comptes de pipeline sont définis.

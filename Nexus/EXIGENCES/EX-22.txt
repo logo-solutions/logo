@@ -1,0 +1,23 @@
+# EX-22 : une version publiée n'est jamais modifiée
+
+- **Source** : exigence **interne**, issue du compte rendu d'atelier « CR » (règles SSI internes), recensée dans le référentiel interne d'exigences CI/CD.
+- **Niveau du CSV** : « Bonne pratique + Obligatoire (ReCyF) ».
+- **Verbatim du CSV** : « Une version publiée n'est jamais modifiée ; le même artefact est déployé dans tous les environnements. »
+- **Vérification prévue (CSV)** : « Tentative de republication rejetée, comparaison d'empreintes ».
+
+## Sources externes examinées et écartées
+
+- **SLSA v1.0** : **vérifié**. La spec contient des exigences de provenance (Provenance Exists, Authentic, Unforgeable, Distribute), mais **aucune exigence d'immutabilité ni de republication**. Le CSV citait SLSA à tort.
+- **ReCyF 5.B.4** : **vérifié**. La mesure porte sur **l'installation des correctifs de sécurité sans retard injustifié** (test, préproduction, production, rollback). Elle ne traite pas de l'immutabilité des artefacts. Le CSV citait cette mesure à tort.
+
+## Conséquence pour l'ADR
+
+Cette exigence n'a **pas de source externe**. Elle repose sur le CR interne. Dans les documents, elle ne doit pas être présentée comme une exigence ReCyF.
+
+## Interprétation retenue (à valider)
+
+Une release ne peut pas être écrasée. La republication refuse toute écriture sur un chemin existant (`Disable redeploy`). Le même artefact, identifié par son empreinte, est déployé en intégration et en production.
+
+## Où elle est utilisée
+
+- ADR-001, section « Promotion » et « Dépôts release ».

@@ -1,0 +1,22 @@
+# OF-61 : informations de vérification de l'intégrité
+
+- **Source** : NIST SP 800-218 v1.1, *Secure Software Development Framework* (SSDF), pratique **PS.2.1**.
+- **Nature** : publication NIST (États-Unis), non contraignante en France.
+- **URL** : https://doi.org/10.6028/NIST.SP.800-218
+- **Vérification** : texte extrait du PDF officiel.
+
+## Texte original
+
+> « PS.2.1 : Make software integrity verification information available to software acquirers. »
+
+Exemple d'implémentation 1 : « Post cryptographic hashes for release files on a well-secured website. »
+
+Le titre du CSV (`recyf-exigences-officielles.csv`) est tronqué : il s'arrête à « Make Integrity Verification Information Available ». Le titre complet est celui ci-dessus.
+
+## Interprétation retenue (à valider)
+
+Les empreintes de chaque release sont accessibles aux consommateurs : le manifeste et le digest Docker. Le déploiement vérifie cette empreinte avant utilisation.
+
+## Où elle est utilisée
+
+- ADR-001, section « Promotion » : empreinte conservée et accessible en release.
