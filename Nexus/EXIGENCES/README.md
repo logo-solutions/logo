@@ -1,11 +1,11 @@
 # Exigences référencées par les ADR Nexus
 
-Une fiche par exigence citée dans `Nexus/adr/`. Chaque fiche donne :
+Une fiche par exigence citée dans `Nexus/ADR-001` et `Nexus/ADR-002`. Chaque fiche donne :
 - la source, et son statut de vérification ;
 - le texte original, quand il a été vérifié ;
 - l'interprétation retenue, à valider par Loïc.
 
-Les textes du CSV de factice (`pilotage/recyf-exigences-officielles.csv`, `pilotage/recyf-exigences-cicd.csv`) sont des reformulations. Ils ne remplacent pas le texte source.
+Les textes des référentiels internes d'exigences (OF-xx et EX-xx) sont des reformulations. Ils ne remplacent pas le texte source.
 
 | Fiche | Exigence | Type | Vérification du texte |
 |---|---|---|---|
