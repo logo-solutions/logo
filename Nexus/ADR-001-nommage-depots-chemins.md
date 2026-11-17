@@ -23,7 +23,7 @@
 
 ## 1. Contexte
 
-Trois services, `oig`, `oigs` et `oigl`, d'environ 20 applications chacun, soit 60 applications. Chaque application utilise en moyenne 3 formats parmi npm, Maven, pypi, Docker et raw. Le volume est de 10 builds par jour au total. L'administration est identique sur les trois services. Les images de base et outils partagés (`mutualise`) servent aux trois services.
+Trois services, `oig`, `oigs` et `oigl`, d'environ 20 applications chacun, soit 60 applications. Chaque application utilise en moyenne 3 formats parmi npm, Maven, pypi, Docker, raw et yum. Le paquet RPM n'est pas un format distinct : il se dépose dans un dépôt `yum`. Le volume est de 10 builds par jour au total. L'administration est identique sur les trois services. Les images de base et outils partagés (`mutualise`) servent aux trois services.
 
 Une convention générique, sans préfixe de service, ne permet pas de régler les droits par service ni de lire un dépôt sans connaître l'ensemble du parc.
 
@@ -42,6 +42,7 @@ Une convention générique, sans préfixe de service, ne permet pas de régler l
 
 Règles :
 - Le préfixe `<service>` vaut `oig`, `oigs` ou `oigl`. Le tiret après le préfixe est obligatoire : `oig-*` ne doit pas capturer `oigs-*` ni `oigl-*`.
+- La version est identique dans les deux dépôts : la promotion copie l'artefact sans le renommer.
 - Le mot `hosted` désigne le candidat. Le runbook doit le dire, car le nom ne le montre pas.
 - Le candidat n'entre jamais dans un groupe.
 - Pas de qualificatif de variante. Aucune application n'en a besoin aujourd'hui.
@@ -61,8 +62,9 @@ Exceptions imposées par le format :
 | Docker | `<application>/<composant>:<version>` | `diagb/image:1.2.0` |
 | pypi | Dossier `packages/` et nom normalisé, gérés par Nexus | `packages/reporting-etl/2.1.0/…whl` |
 | raw | Règle générale | `argo-library-base/config/1.4.0/config.tar` |
+| yum (RPM) | Racine du dépôt portée par `repodata/`, généré par Nexus ; chemin libre sous la racine | `argo-library-base/agent/1.0.0/agent-1.0.0.el8.x86_64.rpm` |
 
-Le numéro de build (`-b142`) n'apparaît que dans la version candidat. La promotion ne change pas le chemin.
+Le candidat et la release ont le **même chemin et la même version**, numéro de build compris (`diagb/image:1.2.0-b142`). La promotion change uniquement le dépôt (`hosted` vers `release`).
 
 Les exemples complets sont dans `EXEMPLES.md`.
 
@@ -97,7 +99,11 @@ Un **sous-domaine** par dépôt Docker et par groupe Docker, en TLS. Un DNS wild
 
 **Pourquoi un sous-domaine plutôt qu'un port** : un port par dépôt et par groupe multiplie les ports à ouvrir et à documenter, et complique le pare-feu. Le sous-domaine n'en demande qu'un.
 
-Point à vérifier avant mise en service : le routage par nom d'hôte est-il pris en charge sur la version Nexus Pro retenue, groupes compris.
+**Contraintes de version**
+- **Version minimale : Nexus Pro 3.69.** Le routage par sous-domaine y est disponible.
+- **Routage par chemin : hors périmètre.** Il n'existe qu'à partir de la 3.83.0 ; on reste donc sur le sous-domaine.
+- **Noms en minuscules** : obligatoire pour les dépôts Docker depuis la 3.89.0. Nos noms le respectent déjà.
+- **À vérifier avant mise en service** : le comportement des groupes Docker avec sous-domaine dédié sur la version Pro retenue, et les changements de push et de pull anonyme introduits en 3.88 et 3.98.
 
 ---
 

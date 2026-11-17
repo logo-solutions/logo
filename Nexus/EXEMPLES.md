@@ -15,8 +15,9 @@ Les noms d'applications et de services sont illustratifs. L'affectation réelle 
 | oig | reporting | metabase | Docker | `oig-docker-release` | `reporting/metabase:0.50.0` |
 | oig | reporting | reporting-etl | pypi | `oig-pypi-release` | `packages/reporting-etl/2.1.0/reporting_etl-2.1.0-py3-none-any.whl` |
 | oig | reporting | dashboards | raw | `oig-raw-release` | `reporting/dashboards/2.1.0/dashboards.zip` |
+| oigl | argo-library-base | agent (RPM, illustratif) | yum | `oigl-yum-release` | `argo-library-base/agent/1.0.0/agent-1.0.0.el8.x86_64.rpm` |
 
-Le candidat a les mêmes chemins, dans le dépôt `<service>-<format>-hosted`, avec le numéro de build dans la version : `1.2.0-b142`.
+Le candidat a les mêmes chemins et les mêmes versions, dans le dépôt `<service>-<format>-hosted`. Exemple : `diagb/image:1.2.0-b142` est présent à l'identique en candidat et en release.
 
 ## 2. Une application à trois tiers
 
@@ -78,3 +79,76 @@ Chaque cas refusé renvoie à une règle.
 | Déployer `image:latest` | Le tag est mutable : le déploiement se fait par empreinte | ADR-001, section 4 |
 | Inclure le dépôt candidat dans un groupe | Le candidat n'entre jamais dans un groupe | ADR-001, section 2 |
 | Nommer un dépôt `oig-npm-v2` | Le numéro de version n'est jamais dans le nom du dépôt | ADR-001, section 2 |
+
+## 7. Application à deux tiers et outillage (schéma de déploiement)
+
+Exemple tiré d'un schéma d'architecture existant. B2G-APP et B2G-BDD sont **deux tiers d'une même application**, `b2g`. Le nom du service reste à affecter (`<service>`).
+
+Composants du schéma :
+
+| Tier | Composant | Nature | Présent dans Nexus ? |
+|---|---|---|---|
+| Présentation / applicatif (B2G-APP) | Application d'entreprise, sur IIS | Livrable applicatif | Oui, format raw ou NuGet (voir point ouvert) |
+| Présentation / applicatif (B2G-APP) | Microsoft .NET Framework 4.x | Composant Windows | Non : fonctionnalité du système, non publiée |
+| Présentation / applicatif (B2G-APP) | Microsoft IIS 10 | Composant Windows | Non : fonctionnalité du système |
+| Données (B2G-BDD) | Microsoft SQL Server 2022 Standard | Logiciel éditeur | Non publié dans Nexus : installé sur un master |
+| Données (B2G-BDD) | Scripts de schéma et de données | Livrable applicatif | Oui, format raw |
+| Outillage (hors application) | 7-Zip, Notepad++, Firefox ESR, Microsoft filterPack, Adobe PDF iFilter | COTS, éditeur | Oui, dépôt candidat raw, empreinte éditeur |
+
+Chemins proposés, pour `<service>` :
+
+| Dépôt release | Chemin | Contenu |
+|---|---|---|
+| `<service>-raw-release` | `b2g/app/<version>/` | Paquet applicatif (tiers présentation et applicatif) |
+| `<service>-raw-release` | `b2g/bdd/scripts/<version>/` | Scripts SQL versionnés (tier données) |
+| `<service>-raw-release` | `outillage/7-zip/<version>/7z-<version>.exe` | COTS, empreinte éditeur |
+
+Le chemin commence par `b2g` : les deux tiers partagent le même premier segment, celui de l'application. L'outillage n'appartient à aucune application ; il est donc sous `outillage/`, en pseudo-application. Ce choix est à valider (voir ci-dessous).
+
+Le candidat a les mêmes chemins dans `<service>-raw-hosted`, et les mêmes versions que la release.
+
+**Points relevés par le schéma**
+
+- Le flux F04 (déploiement d'une nouvelle version par SMB, non chiffré) ne respecte pas le principe de déploiement par le pipeline. Il est à remplacer par un flux chiffré et authentifié, tiré depuis la release par empreinte (ADR-001, section 4).
+- Le flux F03 (accès à SQL Server en TLS, port 1433) est chiffré. Il n'est pas concerné par Nexus.
+- Le format NuGet n'est pas dans le périmètre actuel. Si le livrable B2G-APP est un paquet .NET, il faut l'ajouter (ou le déposer en raw).
+
+## 8. Tirer une image Docker depuis Nexus
+
+Domaine fictif `nexus.entreprise.local`. Le jeton du compte de déploiement est lu depuis le coffre et n'apparaît jamais en clair.
+
+**1. Connexion, avec le compte de déploiement (lecture seule sur la release)**
+
+```bash
+echo "$TOKEN_DEPLOIEMENT_OIGL" | docker login oigl-docker-all.nexus.entreprise.local \
+  -u svc-deploy-oigl --password-stdin
+```
+
+**2. Tirage par étiquette, depuis le groupe de lecture**
+
+```bash
+docker pull oigl-docker-all.nexus.entreprise.local/argo-library-base/execution-environment:1.4.0
+```
+
+Le groupe expose la release de `oigl` et les proxys. C'est l'adresse à donner aux consommateurs.
+
+**3. Tirage par digest, depuis la release : la référence de déploiement**
+
+```bash
+docker pull oigl-docker-release.nexus.entreprise.local/argo-library-base/execution-environment@sha256:<digest>
+docker inspect --format '{{index .RepoDigests 0}}' oigl-docker-release.nexus.entreprise.local/argo-library-base/execution-environment:1.4.0
+```
+
+Le digest est lu après le premier tirage. Le déploiement référence ce digest, jamais l'étiquette `1.4.0`, qui reste mutable.
+
+**4. Contrôle : le candidat est refusé au compte de déploiement**
+
+```bash
+docker pull oigl-docker-hosted.nexus.entreprise.local/argo-library-base/execution-environment:1.4.0-b142
+# Résultat attendu : refus (401 ou 403). Le compte de déploiement ne lit que la release.
+```
+
+**Ce que cet exemple illustre**
+- Un sous-domaine par dépôt et par groupe : le client ne spécifie jamais de chemin `/repository/...`.
+- Le chemin de l'image (`argo-library-base/execution-environment`) suit ADR-001.
+- Le déploiement passe par le digest, et le candidat reste inaccessible au déploiement (ADR-002, S3).

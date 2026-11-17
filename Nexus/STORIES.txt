@@ -11,8 +11,8 @@ Chaque story a : un besoin, des critères d'acceptation, une vérification, et l
 **En tant que** responsable plateforme, **je veux** les dépôts candidat et release de chaque service et de chaque format, **afin de** publier et promouvoir sans dépôt partagé entre services.
 
 **Critères d'acceptation**
-- Pour chacun des 3 services (`oig`, `oigs`, `oigl`) et chacun des 5 formats (npm, Maven, pypi, Docker, raw) : un dépôt `hosted` et un dépôt `release`, soit 30 dépôts.
-- Le mutualisé a ses dépôts propres : 10 dépôts.
+- Pour chacun des 3 services (`oig`, `oigs`, `oigl`) et chacun des 6 formats (npm, Maven, pypi, Docker, raw, yum) : un dépôt `hosted` et un dépôt `release`, soit 36 dépôts.
+- Le mutualisé a ses dépôts propres : 12 dépôts (6 formats × 2 cycles).
 - Chaque dépôt `release` est en politique « Disable redeploy ».
 - Le nom de chaque dépôt suit ADR-001, section 2.
 
@@ -80,6 +80,7 @@ Chaque story a : un besoin, des critères d'acceptation, une vérification, et l
 - Une promotion sans SBOM échoue.
 - Une promotion sans manifeste échoue.
 - Pour Docker, la promotion se fait par digest.
+- Le chemin et la version sont identiques en candidat et en release.
 
 **Vérification** : promotion d'un candidat complet (accepté), puis d'un candidat sans SBOM (refusé), puis comparaison des empreintes.
 
