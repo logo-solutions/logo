@@ -220,36 +220,91 @@ Chaque story a : un besoin, des critères d'acceptation, une vérification, et l
 
 ---
 
-## S15 : rôle Ansible `nexus_access` (comptes, rôles et droits)
+## S15a : sélecteurs de contenu par application et format
 
-**En tant que** responsable de la sécurité, **je veux** que les comptes de service, leurs rôles et leurs droits soient créés et tenus par un rôle Ansible, **afin que** chaque accès soit reproductible, relu et conforme à ADR-002.
+**En tant que** responsable de la gouvernance, **je veux** un sélecteur de contenu par application et par format, **afin que** chaque application ne puisse agir que sur son préfixe.
 
 **Critères d'acceptation**
-- Un sélecteur de contenu existe pour chaque application et chaque format de cette application (`sel-<application>-<format>`).
-- Un privilège existe pour chaque sélecteur et chaque dépôt concerné par son usage.
-- Un rôle existe pour chaque couple service et usage (`svc-<service>-<usage>`) : au plus 12 rôles.
-- Un compte de service existe pour chaque rôle, avec ce seul rôle.
-- Le compte `publication` ne peut écrire que dans `<service>-<format>-hosted`, pour les applications de son service.
-- Le compte `promotion` peut écrire dans `<service>-<format>-release` et lire le candidat ; aucun autre compte n'écrit dans la release.
-- Le compte `deploiement` et le compte `lecture` ne lisent que la release, via le groupe `<service>-<format>-all`.
-- Aucun compte ne peut supprimer une version publiée (ADR-002, section 7).
-- Un second passage du rôle ne modifie rien (idempotence).
+- Un sélecteur `sel-<application>-<format>` existe pour chaque application et chaque format de son inventaire.
+- L'expression respecte le format : `/@<application>/` pour npm, `/packages/<application>` pour pypi, `/v2/<application>/` pour Docker, `/<application>/` pour les autres.
+- Aucun sélecteur ne couvre une autre application.
+
+**Vérification** : liste des sélecteurs via l'API, comparée à l'inventaire ; test d'un chemin hors préfixe, qui ne doit pas correspondre.
+
+**Exigences liées** : 10.C.3 (droits justifiés par un besoin), OF-34.
+
+**Dépendances** : S1 (dépôts créés), S15d (liste des applications).
+
+---
+
+## S15b : privilèges et rôles par service et usage
+
+**En tant que** responsable de la sécurité, **je veux** un rôle par service et par usage, qui ne contient que les privilèges de cet usage, **afin que** chaque compte n'ait que les droits de sa tâche.
+
+**Critères d'acceptation**
+- Un rôle `svc-<service>-<usage>` existe pour chaque couple, soit au plus 12 rôles.
+- Le rôle `publication` peut publier dans `<service>-<format>-hosted`, pour les applications de son service, et ne peut rien écrire ailleurs.
+- Le rôle `promotion` peut écrire dans `<service>-<format>-release` et lire le candidat.
+- Les rôles `deploiement` et `lecture` ne lisent que la release, via le groupe `<service>-<format>-all`.
+- Aucun rôle ne permet de supprimer une version publiée (ADR-002, section 7).
+
+**Vérification** : lecture de chaque rôle via l'API, comparée à la matrice de l'ADR-002, section 2.
+
+**Exigences liées** : 10.C.3, OF-34, OF-12.
+
+**Dépendances** : S15a (sélecteurs), S2 (sélecteurs et privilèges de base).
+
+---
+
+## S15c : comptes de service
+
+**En tant que** responsable de la sécurité, **je veux** un compte par service et par usage, avec son propriétaire nommé, **afin que** chaque accès ait un responsable identifié.
+
+**Critères d'acceptation**
+- Un compte `svc-<service>-<usage>` existe pour chaque couple, avec son seul rôle.
+- Chaque compte a un propriétaire et un suppléant nommés dans le registre (ADR-002, section 3).
+- Le compte `promotion` et le compte `publication` d'un même service ont des propriétaires différents.
+- Aucun compte n'a de mot de passe conservé dans le dépôt.
+
+**Vérification** : liste des comptes via l'API, comparée au registre ; contrôle des propriétaires.
+
+**Exigences liées** : 10.A.1, 10.A.2, OF-33, OF-35.
+
+**Dépendances** : S15b (rôles), décision sur le coffre (ADR-002, section 8).
+
+---
+
+## S15d : tâche de préparation du rôle
+
+**En tant que** développeur du rôle, **je veux** que le rôle construise ses listes à partir de l'inventaire et lise l'existant sur l'instance, **afin qu'il s'exécute sans erreur sur une instance vide comme sur une instance en place**.
+
+**Critères d'acceptation**
+- Les listes des applications, des privilèges, des rôles et des comptes sont construites à partir de `nexus_services`.
+- L'existant (sélecteurs, privilèges, rôles, comptes) est lu avant toute écriture.
 - Le rôle s'arrête en erreur si une variable obligatoire manque (URL, mot de passe administrateur, liste des services).
-- Aucun mot de passe ni jeton n'apparaît dans les journaux ni dans le dépôt.
+- Aucun secret n'apparaît dans les journaux.
 
-**Vérification**
-- Passage du rôle sur une instance de test, puis second passage : aucun changement attendu.
-- Liste des sélecteurs, privilèges, rôles et comptes via l'API, comparée au registre des comptes (ADR-002, section 3).
-- Test d'accès : publication réussie dans le candidat de son service, refusée sur un autre service et dans la release ; déploiement refusé sur le candidat.
+**Vérification** : exécution sur une instance vide, puis sur une instance avec des éléments existants ; contrôle des journaux.
 
-**Exigences liées** : OF-10, OF-33 (10.A.1), OF-34 (10.C.3), OF-35 (10.C.4), 10.A.2, 10.B.4.
+**Dépendances** : aucune. Peut être réalisée en premier.
 
-**Dépendances** : ADR-002 (validé pour les comptes, les usages et la suppression) ; ADR-001 (nommage des dépôts et des sélecteurs) ; S1 (dépôts créés) ; S2 (sélecteurs).
+---
 
-**Points à trancher avant de commencer** :
-- Écart à ADR-002 : un sélecteur par application **et par format**, à valider.
-- Génération des jetons : endpoint à vérifier sur l'instance, pour remplacer le mot de passe initial.
-- Coffre qui conserve les mots de passe initiaux et les jetons.
-- Tâche de préparation : construire les listes à partir de `nexus_services`, et lire l'existant depuis l'API.
+## S15e : idempotence et tests d'accès
 
-**Statut** : à faire. Le rôle existe en première version dans `Nexus/ansible/roles/nexus_access/`, sans la tâche de préparation.
+**En tant que** responsable de la sécurité, **je veux** la preuve que le rôle est idempotent et que les droits sont effectifs, **afin de** pouvoir le relancer sans crainte et de vérifier qu'il respecte ADR-002.
+
+**Critères d'acceptation**
+- Un second passage du rôle ne modifie rien.
+- Publication réussie dans le candidat de son service, et refusée sur un autre service et dans la release.
+- Promotion réussie du candidat vers la release, et refusée ailleurs.
+- Déploiement refusé sur le candidat ; lecture réussie sur la release.
+- Suppression d'une version publiée refusée pour tous les comptes.
+
+**Vérification** : passage deux fois du rôle ; tests d'accès par compte, avec résultats tracés.
+
+**Exigences liées** : OF-10, EX-22.
+
+**Dépendances** : S15a, S15b, S15c, S15d.
+
+**Ordre** : S15d, puis S15a et S15b, puis S15c, puis S15e.
