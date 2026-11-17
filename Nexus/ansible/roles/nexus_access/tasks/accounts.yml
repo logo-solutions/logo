@@ -1,0 +1,47 @@
+---
+# Comptes de service : un par service et par usage (ADR-002).
+# Mot de passe initial généré, conservé hors dépôt. L'usage normal passe par un jeton
+# généré à la demande (OF-10) : l'endpoint de génération de jeton reste à vérifier sur l'instance.
+- name: Créer le compte de service s'il n'existe pas
+  ansible.builtin.uri:
+    url: "{{ nexus_api }}/v1/security/users"
+    method: POST
+    url_username: "{{ nexus_admin_username }}"
+    url_password: "{{ nexus_admin_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      userId: "{{ item.id }}"
+      firstName: "{{ item.id }}"
+      lastName: service
+      emailAddress: "{{ nexus_service_email }}"
+      password: "{{ lookup('ansible.builtin.password', nexus_secrets_dir ~ '/' ~ item.id ~ ' length=32 chars=ascii_letters,digits') }}"
+      status: active
+      roles: ["{{ item.role }}"]
+    status_code: [200, 201]
+  when: item.id not in nexus_known_users
+  no_log: true
+  loop: "{{ nexus_accounts_plan }}"
+  loop_control:
+    label: "{{ item.id }}"
+
+- name: Mettre à jour les rôles des comptes existants
+  ansible.builtin.uri:
+    url: "{{ nexus_api }}/v1/security/users/{{ item.id }}"
+    method: PUT
+    url_username: "{{ nexus_admin_username }}"
+    url_password: "{{ nexus_admin_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      userId: "{{ item.id }}"
+      firstName: "{{ item.id }}"
+      lastName: service
+      emailAddress: "{{ nexus_service_email }}"
+      status: active
+      roles: ["{{ item.role }}"]
+    status_code: [200, 204]
+  when: item.id in nexus_known_users
+  loop: "{{ nexus_accounts_plan }}"
+  loop_control:
+    label: "{{ item.id }}"

@@ -1,0 +1,25 @@
+---
+# Un sélecteur par application et par format. Le format change le préfixe du chemin
+# (npm : @application ; pypi : packages/ ; docker : v2/application/), donc un seul sélecteur
+# par application ne suffit pas. Écart à ADR-002 à valider.
+- name: Créer ou mettre à jour le sélecteur
+  ansible.builtin.uri:
+    url: >-
+      {{ nexus_api }}/v1/security/content-selectors{{ '/' ~ sel_name if sel_exists else '' }}
+    method: "{{ 'PUT' if sel_exists else 'POST' }}"
+    url_username: "{{ nexus_admin_username }}"
+    url_password: "{{ nexus_admin_password }}"
+    force_basic_auth: true
+    body_format: json
+    body: >-
+      {{ ({} if sel_exists else {'name': sel_name}) | combine({
+           'description': 'Chemin de ' ~ item.0.id ~ ' (' ~ item.1 ~ ')',
+           'expression': nexus_selector_expressions[item.1]
+                         | replace('__ID__', item.0.id)}) }}
+    status_code: [200, 201, 204]
+  vars:
+    sel_name: "sel-{{ item.0.id }}-{{ item.1 }}"
+    sel_exists: "{{ sel_name in nexus_known_selectors }}"
+  loop: "{{ nexus_applications_flat }}"
+  loop_control:
+    label: "{{ item.0.id }} / {{ item.1 }}"

@@ -217,3 +217,39 @@ Chaque story a : un besoin, des critères d'acceptation, une vérification, et l
 4. S7 (routage Docker) et S8 (digest)
 5. S9 (groupes), S10 (proxys), S11 (mutualisé)
 6. S12 (runbook), S13 et S14 (après décisions)
+
+---
+
+## S15 : rôle Ansible `nexus_access` (comptes, rôles et droits)
+
+**En tant que** responsable de la sécurité, **je veux** que les comptes de service, leurs rôles et leurs droits soient créés et tenus par un rôle Ansible, **afin que** chaque accès soit reproductible, relu et conforme à ADR-002.
+
+**Critères d'acceptation**
+- Un sélecteur de contenu existe pour chaque application et chaque format de cette application (`sel-<application>-<format>`).
+- Un privilège existe pour chaque sélecteur et chaque dépôt concerné par son usage.
+- Un rôle existe pour chaque couple service et usage (`svc-<service>-<usage>`) : au plus 12 rôles.
+- Un compte de service existe pour chaque rôle, avec ce seul rôle.
+- Le compte `publication` ne peut écrire que dans `<service>-<format>-hosted`, pour les applications de son service.
+- Le compte `promotion` peut écrire dans `<service>-<format>-release` et lire le candidat ; aucun autre compte n'écrit dans la release.
+- Le compte `deploiement` et le compte `lecture` ne lisent que la release, via le groupe `<service>-<format>-all`.
+- Aucun compte ne peut supprimer une version publiée (ADR-002, section 7).
+- Un second passage du rôle ne modifie rien (idempotence).
+- Le rôle s'arrête en erreur si une variable obligatoire manque (URL, mot de passe administrateur, liste des services).
+- Aucun mot de passe ni jeton n'apparaît dans les journaux ni dans le dépôt.
+
+**Vérification**
+- Passage du rôle sur une instance de test, puis second passage : aucun changement attendu.
+- Liste des sélecteurs, privilèges, rôles et comptes via l'API, comparée au registre des comptes (ADR-002, section 3).
+- Test d'accès : publication réussie dans le candidat de son service, refusée sur un autre service et dans la release ; déploiement refusé sur le candidat.
+
+**Exigences liées** : OF-10, OF-33 (10.A.1), OF-34 (10.C.3), OF-35 (10.C.4), 10.A.2, 10.B.4.
+
+**Dépendances** : ADR-002 (validé pour les comptes, les usages et la suppression) ; ADR-001 (nommage des dépôts et des sélecteurs) ; S1 (dépôts créés) ; S2 (sélecteurs).
+
+**Points à trancher avant de commencer** :
+- Écart à ADR-002 : un sélecteur par application **et par format**, à valider.
+- Génération des jetons : endpoint à vérifier sur l'instance, pour remplacer le mot de passe initial.
+- Coffre qui conserve les mots de passe initiaux et les jetons.
+- Tâche de préparation : construire les listes à partir de `nexus_services`, et lire l'existant depuis l'API.
+
+**Statut** : à faire. Le rôle existe en première version dans `Nexus/ansible/roles/nexus_access/`, sans la tâche de préparation.

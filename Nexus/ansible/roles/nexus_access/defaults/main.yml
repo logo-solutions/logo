@@ -1,0 +1,55 @@
+---
+# Accès Nexus : sélecteurs, privilèges, rôles et comptes de service.
+# Aligné sur ADR-001 (dépôts, chemins) et ADR-002 (comptes, usages, droits).
+
+nexus_api: "{{ nexus_url }}/service/rest"
+
+# Usages et droits, par dépôt (ADR-002, section 2).
+# write : actions accordées sur le dépôt de l'application.
+nexus_usages:
+  publication:
+    repo_kind: hosted
+    actions: [add, edit, read]
+  promotion:
+    read_kind: hosted
+    write_kind: release
+  deploiement:
+    read_kind: release
+  lecture:
+    read_kind: release
+
+# Expression du sélecteur par format. Chemin de l'application en premier (ADR-001, section 3).
+# npm : la portée est @<application> ; les autres formats commencent par /<application>/.
+nexus_selector_expressions:
+  npm: 'path =^ "/@__ID__/"'
+  maven2: 'path =^ "/__ID__/"'
+  pypi: 'path =^ "/packages/__ID__"'
+  docker: 'path =^ "/v2/__ID__/"'
+  raw: 'path =^ "/__ID__/"'
+  yum: 'path =^ "/__ID__/"'
+
+# Formats par dépôt : format Nexus de chaque clé.
+nexus_format_names:
+  npm: npm
+  maven2: maven2
+  pypi: pypi
+  docker: docker
+  raw: raw
+  yum: yum
+
+# Liste des services et de leurs applications. À renseigner dans l'inventaire.
+# Exemple :
+# nexus_services:
+#   - id: oig
+#     applications:
+#       - { id: reporting, formats: [docker, raw, pypi] }
+nexus_services: []
+
+# Propriétaires nommés (ADR-002, section 3). Ne contient aucun secret.
+# Exemple :
+# nexus_account_owners:
+#   svc-oig-publication: { owner: "Prénom Nom", deputy: "Prénom Nom" }
+nexus_account_owners: {}
+
+# Dossier local (hors dépôt) où sont conservés les mots de passe initiaux.
+nexus_secrets_dir: "{{ lookup('env', 'HOME') }}/.nexus-secrets"

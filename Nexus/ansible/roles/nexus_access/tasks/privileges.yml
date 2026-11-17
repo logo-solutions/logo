@@ -1,0 +1,24 @@
+---
+# Un privilège par application, par format et par dépôt concerné par son usage.
+- name: Créer ou mettre à jour le privilège
+  ansible.builtin.uri:
+    url: >-
+      {{ nexus_api }}/v1/security/privileges/repository-content-selector{{ '/' ~ item.name if exists else '' }}
+    method: "{{ 'PUT' if exists else 'POST' }}"
+    url_username: "{{ nexus_admin_username }}"
+    url_password: "{{ nexus_admin_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      name: "{{ item.name }}"
+      description: "{{ item.usage }} de {{ item.app }} ({{ item.format }}) sur {{ item.repo }}"
+      actions: "{{ item.actions }}"
+      format: "{{ nexus_format_names[item.format] }}"
+      repository: "{{ item.repo }}"
+      contentSelector: "{{ item.selector }}"
+    status_code: [200, 201, 204]
+  vars:
+    exists: "{{ item.name in nexus_known_privileges }}"
+  loop: "{{ nexus_privileges_plan }}"
+  loop_control:
+    label: "{{ item.name }}"

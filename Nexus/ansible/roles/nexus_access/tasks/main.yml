@@ -1,0 +1,21 @@
+---
+- name: Valider les variables obligatoires
+  ansible.builtin.assert:
+    that:
+      - nexus_url is defined
+      - nexus_admin_password is defined
+      - nexus_services | length > 0
+    fail_msg: "nexus_url, nexus_admin_password (coffre) et nexus_services sont obligatoires"
+  no_log: true
+
+- name: Sélecteurs de contenu, un par application et par format
+  ansible.builtin.include_tasks: selectors.yml
+
+- name: Privilèges à sélecteur de contenu
+  ansible.builtin.include_tasks: privileges.yml
+
+- name: Rôles par service et par usage
+  ansible.builtin.include_tasks: roles.yml
+
+- name: Comptes de service
+  ansible.builtin.include_tasks: accounts.yml

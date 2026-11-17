@@ -1,0 +1,23 @@
+---
+# Un rôle par service et par usage (ADR-002, section 2) : svc-<service>-<usage>.
+- name: Créer ou mettre à jour le rôle
+  ansible.builtin.uri:
+    url: >-
+      {{ nexus_api }}/v1/security/roles{{ '/' ~ item.id if exists else '' }}
+    method: "{{ 'PUT' if exists else 'POST' }}"
+    url_username: "{{ nexus_admin_username }}"
+    url_password: "{{ nexus_admin_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      id: "{{ item.id }}"
+      name: "{{ item.id }}"
+      description: "{{ item.description }}"
+      privileges: "{{ item.privileges }}"
+      roles: []
+    status_code: [200, 201, 204]
+  vars:
+    exists: "{{ item.id in nexus_known_roles }}"
+  loop: "{{ nexus_roles_plan }}"
+  loop_control:
+    label: "{{ item.id }}"
