@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Maquette Nexus, dépôts OIG (dbx)</title>
+<title>Maquette Nexus, dépôts oigg (dbx)</title>
 <style>
 body { margin: 0; font: 13px/1.4 -apple-system, "Segoe UI", sans-serif; background: #f4f5f7; color: #1d2433; }
 header { background: #1d2433; color: #fff; padding: 10px 16px; font-weight: 600; }
@@ -12,44 +12,47 @@ main { padding: 12px; display: grid; gap: 12px; grid-template-columns: 1fr 1fr 1
 section.large { grid-column: 1 / -1; }
 h2 { font-size: 14px; margin: 0 0 8px; }
 table { width: 100%; border-collapse: collapse; background: #fff; }
-th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid #e5e7eb; }
+th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid #e5e7eb; }
 th { background: #eef0f4; font-weight: 600; }
 .rel { color: #b5562b; font-family: ui-monospace, Menlo, monospace; }
 .mut { color: #3f7a68; font-family: ui-monospace, Menlo, monospace; }
 .hosted { color: #5b6374; font-family: ui-monospace, Menlo, monospace; }
-pre { background: #fff; padding: 12px; margin: 0; border: 1px solid #e5e7eb; font: 12px/1.5 ui-monospace, Menlo, monospace; }
+pre { background: #fff; padding: 8px; margin: 0; border: 1px solid #e5e7eb; font: 12px/1.5 ui-monospace, Menlo, monospace; }
 .note { color: #5b6374; font-size: 12px; }
 </style>
 </head>
 <body>
 <header>Nexus Repository Pro <span>· Browse</span></header>
-<div class="bandeau">Maquette illustrative construite à partir de EXEMPLES.md. Ce n'est pas une capture de l'instance.</div>
+<div class="bandeau">Structure cible pour le service oigg, non déployée. Maquette, pas une capture de l'instance.</div>
 <main>
 
 <section class="large">
-<h2>Dépôts</h2>
+<h2>Dépôts du service oigg (un candidat et une release par format)</h2>
 <table>
-<tr><th>Nom</th><th>Type</th><th>Format</th><th>Statut</th></tr>
-<tr><td class="rel">oigg-docker-release</td><td>hosted</td><td>docker</td><td>Online</td></tr>
-<tr><td class="hosted">oigg-docker-hosted</td><td>hosted</td><td>docker</td><td>Online</td></tr>
-<tr><td class="rel">oigg-raw-release</td><td>hosted</td><td>raw</td><td>Online</td></tr>
-<tr><td class="rel">oigg-pypi-release</td><td>hosted</td><td>pypi</td><td>Online</td></tr>
-<tr><td class="rel">oigs-npm-release</td><td>hosted</td><td>npm</td><td>Online</td></tr>
-<tr><td class="rel">oigs-maven-release</td><td>hosted</td><td>maven2</td><td>Online</td></tr>
-<tr><td class="rel">oigs-docker-release</td><td>hosted</td><td>docker</td><td>Online</td></tr>
-<tr><td class="rel">oigl-docker-release</td><td>hosted</td><td>docker</td><td>Online</td></tr>
-<tr><td class="rel">oigl-raw-release</td><td>hosted</td><td>raw</td><td>Online</td></tr>
-<tr><td class="mut">mutualise-raw-release</td><td>hosted</td><td>raw</td><td>Online</td></tr>
-<tr><td class="mut">mutualise-docker-release</td><td>hosted</td><td>docker</td><td>Online</td></tr>
-<tr><td>oigg-docker-all</td><td>group</td><td>docker</td><td>Online</td></tr>
-<tr><td>proxy-docker-dockerhub</td><td>proxy</td><td>docker</td><td>Online</td></tr>
+<tr><th>Dépôt</th><th>Rôle</th><th>Format</th></tr>
+<tr><td class="hosted">oigg-npm-hosted</td><td>candidat</td><td>npm</td></tr>
+<tr><td class="rel">oigg-npm-release</td><td>release, immuable</td><td>npm</td></tr>
+<tr><td class="hosted">oigg-maven-hosted</td><td>candidat</td><td>maven2</td></tr>
+<tr><td class="rel">oigg-maven-release</td><td>release, immuable</td><td>maven2</td></tr>
+<tr><td class="hosted">oigg-pypi-hosted</td><td>candidat</td><td>pypi</td></tr>
+<tr><td class="rel">oigg-pypi-release</td><td>release, immuable</td><td>pypi</td></tr>
+<tr><td class="hosted">oigg-docker-hosted</td><td>candidat</td><td>docker</td></tr>
+<tr><td class="rel">oigg-docker-release</td><td>release, immuable</td><td>docker</td></tr>
+<tr><td class="hosted">oigg-raw-hosted</td><td>candidat</td><td>raw</td></tr>
+<tr><td class="rel">oigg-raw-release</td><td>release, immuable</td><td>raw</td></tr>
+<tr><td>oigg-docker-all</td><td>groupe de lecture</td><td>docker</td></tr>
+<tr><td class="mut">mutualise-raw-hosted</td><td>candidat, équipe des images</td><td>raw</td></tr>
+<tr><td class="mut">mutualise-raw-release</td><td>release, immuable</td><td>raw</td></tr>
+<tr><td class="mut">mutualise-docker-hosted</td><td>candidat, équipe des images</td><td>docker</td></tr>
+<tr><td class="mut">mutualise-docker-release</td><td>release, immuable</td><td>docker</td></tr>
+<tr><td>proxy-docker-dockerhub</td><td>proxy, sources externes</td><td>docker</td></tr>
 </table>
-<p class="note">Les dépôts `-hosted` (candidat) ne figurent pas dans les groupes de lecture.</p>
+<p class="note">Le candidat n'entre dans aucun groupe. Seule la release est lisible par les déploiements.</p>
 </section>
 
 <section>
-<h2>Contenu : oigs-docker-release</h2>
-<pre>oigs-docker-release
+<h2>Contenu : oigg-docker-release</h2>
+<pre>oigg-docker-release
 └── dbx/
     └── dbx-image/
         └── 1.2.0          sha256:…
@@ -57,8 +60,8 @@ pre { background: #fff; padding: 12px; margin: 0; border: 1px solid #e5e7eb; fon
 </section>
 
 <section>
-<h2>Contenu : oigs-npm-release</h2>
-<pre>oigs-npm-release
+<h2>Contenu : oigg-npm-release</h2>
+<pre>oigg-npm-release
 └── @dbx/
     └── dbx-web/
         └── -/
@@ -67,20 +70,12 @@ pre { background: #fff; padding: 12px; margin: 0; border: 1px solid #e5e7eb; fon
 </section>
 
 <section>
-<h2>Contenu : oigs-raw-release</h2>
-<pre>oigs-raw-release
+<h2>Contenu : oigg-raw-release</h2>
+<pre>oigg-raw-release
 └── dbx/
     └── dbx-config/
         └── 1.2.0/
             └── dbx-config.tar
-</pre>
-
-<h2>Contenu : mutualise-raw-release</h2>
-<pre>mutualise-raw-release
-└── image-doree-temurin-21/
-    └── 21.0.5/
-        ├── image.tar
-        └── sbom.cdx.json
 </pre>
 </section>
 
