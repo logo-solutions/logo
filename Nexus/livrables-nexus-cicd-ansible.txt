@@ -1,0 +1,53 @@
+=== Livrables ===
+ID | Domaine | Livrable | Imposé par (exigence) | Commanditaire | Nature | Instance de validation | Précision si Autre
+L01 | Nexus | Matrice des dépôts par format et cycle de vie, sélecteurs de contenu par service | OF-34, OF-60 ; ADR-0004 | ANSSI (ReCyF v2.5) ; Interne (ADR-0004) | Obligatoire | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L02 | Nexus | Droits par rôle et par dépôt, registre des comptes, revue annuelle | OF-13, OF-33, OF-34, OF-35 | ANSSI (ReCyF v2.5) | Obligatoire | Autre | Contrôle d'accès (RSSI)
+L03 | Nexus | Politique d'écriture (immutabilité des versions release) | OF-22, OF-61, EX-22 | ANSSI (ReCyF v2.5) ; OpenSSF SLSA (bonne pratique) (EX-22) | Obligatoire / bonne pratique | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L04 | Nexus | Procédure de promotion candidat → release et son repli | ADR-0001 | Interne | — | Communauté de pratique (au sein de la direction) | 
+L05 | Nexus | Deux instances Nexus séparées (build et production) | EX-05, OF-03 | ANSSI (ReCyF v2.5) (OF-03) ; Interne (EX-05) | Interne | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L06 | Nexus | Matrice de flux et règles de filtrage, revue annuelle | OF-05, OF-06, OF-07, EX-03 | ANSSI (ReCyF v2.5) | Obligatoire | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L07 | Nexus | Sas de transfert contrôlé (antivirus, journal) pour les artefacts entrants | EX-04, OF-27 | ANSSI (ReCyF v2.5) (ReCyF 9.7) ; Interne (EX-04) | Obligatoire | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L08 | Nexus | Import initial depuis les sources officielles | OF-26, EX-26 | ANSSI (ReCyF v2.5) ; Référence DevSecOps (bonne pratique) (EX-26) | Obligatoire | Communauté de pratique (au sein de la direction) | 
+L09 | Nexus | Politique de rétention et de nettoyage, avec procédure de libération d'espace | OF-42, OF-62, EX-12 | ANSSI (ReCyF v2.5) | Obligatoire | Communauté de pratique (au sein de la direction) | 
+L10 | Nexus | Plan de sauvegarde et restauration, test annuel | OF-43 ; ADR-0003 | ANSSI (ReCyF v2.5) ; Interne (ADR-0003) | Obligatoire | Autre | Plan de reprise d'activité (DSI)
+L11 | Nexus | Runbook d'exploitation et supervision de base | Stories S8, S9 | Interne | — | Communauté de pratique (au sein de la direction) | 
+L12 | CI/CD | Schéma d'architecture CI/CD, dev/prod séparés, non exposé à Internet | EX-01, EX-02, OF-03, OF-58 | ANSSI (ReCyF v2.5) (EX-01, OF-03, OF-58) ; Référence DevSecOps (bonne pratique) (EX-02) | Obligatoire / recommandé | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L13 | CI/CD | Runners éphémères, dédiés par zone, avec tags, plan de réinstanciation | EX-14, EX-15, EX-17, OF-17, OF-48 | ANSSI (ReCyF v2.5) (EX-17, OF-17, OF-48) ; Interne (EX-15) ; Référence DevSecOps (bonne pratique) (EX-14) | Recommandé / interne | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L14 | CI/CD | Template de pipeline de référence (contrôles inclus) | CI2 ; OF-41, OF-51, OF-54 | Interne (CI2) ; ANSSI (ReCyF v2.5) (OF-41, OF-51, OF-54) | Bonne pratique | Communauté de pratique (au sein de la direction) | 
+L15 | CI/CD | Contrôles de sécurité bloquants : SCA, SAST, secrets, scan d'image, critique bloquant | OF-25, OF-28, OF-55, EX-28 | ANSSI (ReCyF v2.5) ; Référence DevSecOps (bonne pratique) (EX-28) | Obligatoire / recommandé | Communauté de pratique (au sein de la direction) | 
+L16 | CI/CD | SBOM CycloneDX à chaque build | OF-24, OF-65, EX-24 ; ADR-0002 | ANSSI (ReCyF v2.5) ; Interne (ADR-0002) | Obligatoire | Communauté de pratique (au sein de la direction) | 
+L17 | CI/CD | Provenance de build (SLSA) et attestation signée | EX-23, OF-44, OF-45, OF-49 | OpenSSF SLSA (bonne pratique) (EX-23) ; ANSSI (ReCyF v2.5) (OF-44, OF-45, OF-49) | Bonne pratique / cadre OpenSSF | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L18 | CI/CD | Signature des artefacts et des tags, clé dans un coffre ou HSM | EX-19, EX-20, OF-22, OF-52 | ANSSI (ReCyF v2.5) (OF-22, OF-52) ; Référence DevSecOps (bonne pratique) et OpenSSF SLSA (bonne pratique) (EX-19, EX-20) | Recommandé / bonne pratique | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L19 | CI/CD | Gestion des secrets : un gestionnaire par environnement, détection à la poussée | EX-29, OF-30, OF-53, OF-57 | ANSSI (ReCyF v2.5) (EX-29, OF-30, OF-53, OF-57) | Obligatoire / recommandé | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L20 | CI/CD | MFA et signature des commits | OF-32, EX-30 | ANSSI (ReCyF v2.5) (OF-32) ; Référence DevSecOps (bonne pratique) (EX-30) | Recommandé | Autre | Politique d'authentification (RSSI)
+L21 | CI/CD | Comptes de service dédiés, jetons courts à la demande | EX-10, OF-10, OF-13 | ANSSI (ReCyF v2.5) | Obligatoire / recommandé | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L22 | CI/CD | Runners durcis, images de base minimales (golden images) | EX-18, OF-18, OF-19, OF-20 | ANSSI (ReCyF v2.5) | Obligatoire / recommandé | Communauté de pratique (au sein de la direction) | 
+L23 | CI/CD | Double validation humaine avant la production | EX-21 | Non identifié (pratique d'homologation) | Bonne pratique (à valider) | Autre | Décision de mise en production (direction)
+L24 | CI/CD | Journalisation et supervision de la CI/CD de production | OF-11, OF-42, EX-12 | ANSSI (ReCyF v2.5) | Recommandé / obligatoire | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L25 | Ansible | Standard des rôles et playbooks, tests et durcissement | A1 ; OF-19, OF-21 | Interne (A1) ; ANSSI (ReCyF v2.5) (OF-19, OF-21) | Obligatoire / recommandé | Communauté de pratique (au sein de la direction) | 
+L26 | Ansible | Inventaires et environnements séparés, variables par environnement | A2 ; EX-01 | Interne (A2) ; ANSSI (ReCyF v2.5) (EX-01) | Obligatoire | Communauté de pratique (au sein de la direction) | 
+L27 | Ansible | Configuration applicative versionnée | A3 ; OF-21 | Interne (A3) ; ANSSI (ReCyF v2.5) (OF-21) | Recommandé | Communauté de pratique (au sein de la direction) | 
+L28 | Ansible | Playbook de déploiement qui refuse tout artefact non signé ou non prouvé | A4 ; OF-56, EX-19, OF-22 | Interne (A4) ; ANSSI (ReCyF v2.5) (OF-56, OF-22) ; Référence DevSecOps (bonne pratique) (EX-19) | Recommandé / obligatoire | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L29 | Ansible | Procédure de retour arrière testée | OF-23 | ANSSI (ReCyF v2.5) | Moyen acceptable | Communauté de pratique (au sein de la direction) | 
+L30 | Ansible | Gestion des secrets : un vault par application, mot de passe hors dépôt | A5 ; OF-30, OF-31 | Interne (A5) ; ANSSI (ReCyF v2.5) (OF-30, OF-31) | Recommandé | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L31 | Ansible | Compte de service SSH dédié, flux documentés | EX-11 | ANSSI (ReCyF v2.5) (ReCyF 7.B.1, 10.A.1) ; Interne (EX-11) | Obligatoire | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L32 | Ansible | Journal de chaque déploiement, conservé au moins trois mois | EX-12 | ANSSI (ReCyF v2.5) (ReCyF 20.4, 20.5) | Obligatoire | Communauté de pratique (au sein de la direction) | 
+L33 | Ansible | Poste d'administration dédié et réseau d'administration séparé | OF-09, OF-14, EX-07, EX-08 | ANSSI (ReCyF v2.5) | Recommandé / obligatoire | DAG (Dossier d'architecture générale visé par l'AE, SSI) | 
+L34 | Ansible | Contrôle automatisé de la conformité (Ansible en mode vérification) | OF-21 | ANSSI (ReCyF v2.5) | Moyen acceptable | Communauté de pratique (au sein de la direction) | 
+L35 | Ansible | Note de décision du RSSI pour toute action de production | EX-07 | ANSSI (ReCyF v2.5) (ReCyF 11.A.1) | Obligatoire | Autre | Décision RSSI
+L36 | Transversal | Analyse de risques par SI et grille de conformité | OF-38, OF-39 | ANSSI (ReCyF v2.5) | Obligatoire | Autre | Analyse de risques (RSSI)
+L37 | Transversal | Cartographie des applications | OF-37 | ANSSI (ReCyF v2.5) | Obligatoire | Autre | Inventaire (DSI)
+L38 | Transversal | Liste des prestataires et des interconnexions | OF-36 | ANSSI (ReCyF v2.5) | Obligatoire | Autre | Achats / DSI
+L39 | Transversal | Revue annuelle des accès des sous-traitants | EX-31 | ANSSI (ReCyF v2.5) | Obligatoire | Autre | Contrôle d'accès (RSSI)
+L40 | Transversal | Politique de développement sécurisé | OF-41 | ANSSI (ReCyF v2.5) | Obligatoire | Communauté de pratique (au sein de la direction) | 
+
+=== Légende ===
+Élément | Signification
+DAG (Dossier d'architecture générale visé par l'AE, SSI) | Décisions d'architecture et de sécurité qui engagent le SI : à faire viser par l'AE et le SSI.
+Communauté de pratique (au sein de la direction) | Standards et procédures opérationnels, validés entre pairs au sein de la direction.
+Autre | Sujets relevant d'une autre autorité (RSSI, DSI, direction, achats) : préciser dans la colonne dédiée.
+Commanditaire : ANSSI (ReCyF v2.5) | Référentiel de l'ANSSI, document de travail du 17/03/2026. Les identifiants OF-xx (officielles) et EX-xx (CI/CD) sont les numéros du registre de pilotage ; ils renvoient aux mesures ReCyF citées dans la source.
+Commanditaire : Interne | Décision de la direction ou du projet (ADR, épiques A/CI/N, stories, décisions internes).
+Commanditaire : référence de bonne pratique | DevSecOps, SLSA (OpenSSF), NIST SSDF : cadres de référence, sans caractère obligatoire. Ils ne donnent pas de commanditaire.
+Commanditaire : non identifié | Pratique d'homologation sans texte de référence (EX-21) : à confirmer avant validation.
+Note | L'attribution des instances et des commanditaires est une proposition à valider avec le RSSI et l'AE. La nature « recommandé » ou « bonne pratique » reste indicative.
